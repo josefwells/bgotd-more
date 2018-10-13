@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use Image::Magick;
 use File::Copy;
+use File::Basename;
+use File::Path;
 use Getopt::Long;
 
 my %opt = ();
@@ -19,10 +21,10 @@ unless (-d $opt{root}."/pictures") { die  "Must supply a root directory containi
 
 ### Start CONFIG
 
-my $temp = "$opt{root}/temp$opt{screen}";
-my $searchPath = '$opt{root}/pictures/';
+my $temp = "$opt{root}/.temp$opt{screen}";
+my $searchPath = "$opt{root}/pictures/";
 my $final = "$opt{root}/background/$opt{screen}/bgotd";
-my $black = '$opt{root}/background/.black.bgotd.jpg';
+my $black = "$opt{root}/background/.black.bgotd.jpg";
 my $switchTime = 600;            # time in seconds
 my $maxW = 1920;
 my $maxH = 1200;
@@ -33,6 +35,9 @@ my $maxDimensions = "$maxW"."x"."$maxH";  # What's the max size of the photo.
 my $halfDim = $maxW/2 ."x"."$maxH";
 
 ### END CONFIG
+
+mkdir $temp;
+File::Path::make_path(File::Basename::dirname($final));
 
 # bgotd-more -- background of the day (more)
 #
@@ -135,6 +140,7 @@ while(1)
     `mogrify -resize $maxDimensions -extent $maxDimensions -gravity center -background $color $temp/bgotd.jpg`;
   }
 
+  # do what?
   copy $temp."/bgotd.jpg", $final.".jpg";
   copy $temp."/bgotd.jpg", $final."_1.jpg";
 
